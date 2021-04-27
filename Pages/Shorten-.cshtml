@@ -1,0 +1,13 @@
+﻿@page
+@model Bolt.Pages.ShortenModel
+@{
+    Layout = "";
+    string Short = "";
+    if (HttpContext.Request.Query["url"] != "") {
+        Short = await ShortenModel.Shorten(System.Web.HttpUtility.UrlDecode(HttpContext.Request.Query["url"]));
+    } else {
+        Short = "No URL Supplied";
+	}
+}
+
+@Short

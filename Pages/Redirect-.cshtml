@@ -1,0 +1,27 @@
+@page
+@model RedirectModel
+@{
+    Layout = "";
+}
+<html>
+<head>
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script>
+        var short = (location.pathname + location.search).substr(1);
+        $.ajax({
+            url: "/GetURL-?short=" + short,
+            type: 'GET',
+            async: false,
+            timeout: 10000,
+            success: function (result) {
+                if (result.includes("INVALID#")) {
+                    location.href = "/Invalid-";
+                } else {
+                    location.replace(decodeURIComponent(result));
+                }
+            }
+        });
+    </script>
+</head>
+<body></body>
+</html>

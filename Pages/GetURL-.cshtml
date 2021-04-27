@@ -1,0 +1,13 @@
+﻿@page
+@model Bolt.Pages.GetURLModel
+@{
+    Layout = "";
+    string URL = "";
+    if (HttpContext.Request.Query["short"] != "") {
+        URL = await GetURLModel.Get(HttpContext.Request.Query["short"].ToString().Trim());
+    } else {
+        URL = "INVALID#";
+	}
+}
+
+@URL

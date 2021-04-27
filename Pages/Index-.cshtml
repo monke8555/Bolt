@@ -1,0 +1,65 @@
+﻿@page
+@model IndexModel
+@{
+    ViewData["Title"] = "Home page";
+}
+
+<div class="text-center">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10.16.6/dist/sweetalert2.all.min.js"></script>
+    <h1>Welcome to Bolt!</h1>
+    <br />
+    <form id="mainForm">
+        <label for="url">Enter the URL you want to shorten:</label>
+        <br /><br />
+        <input style="border-color: gray; border-radius: 5px" type="text" name="url" title="Enter a URL starting with http:// or https://" size="30" />
+        <br /><br />
+        <input type="submit" value="Shorten!" class="btn btn-primary" />
+    </form>
+    <br />
+    <p id="label" style="display:none;">Shortened URL:</p>
+    <output id="shortURL"></output>
+    <br /><br />
+    <a id="QRLink">
+        <img id="QRCode" alt="QR Code" style="display:none;" />
+    </a>
+    <script>
+        $("#mainForm").get()[0].onsubmit = function (e) { e.preventDefault(); submit(); }
+        function submit() {
+            var toSend = $('input[name="url"]').get()[0].value;
+            if ((!toSend.startsWith("http://")) && (!toSend.startsWith("https://"))) {
+                toSend = "http://" + toSend;
+            }
+            toSend = encodeURIComponent(toSend);
+
+            $.ajax({
+                async: false,
+                url: '/Shorten-?url=' + toSend,
+                type: 'GET',
+                success: function (result) {
+                    if (result.includes("NOTAURL#")) {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Not a valid URL!',
+                            text: 'The URL supplied is not a valid URL, make sure that it starts with http:// or https://',
+                        })
+                        return false;
+                    }
+                    if (result.includes("404#")) {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'URL does not exist!',
+                            text: 'The URL supplied does not exist, make sure the website exists before shortening it!',
+                        })
+                        return false;
+                    }
+                    var short = 'https://bolturl.herokuapp.com/' + result.trim();
+                    $('#shortURL').get()[0].innerHTML = '<a href="' + short + '">' + short + '</a>';
+                    $('#label').css('display', 'block');
+                    $('#QRCode').get()[0].src = "https://chart.googleapis.com/chart?cht=qr&chs=150x150&chl=" + short;
+                    $('#QRCode').css('display', 'inline');
+                    $('#QRLink').get()[0].href = "https://chart.googleapis.com/chart?cht=qr&chs=150x150&chl=" + short;
+                }
+            });
+        }
+    </script>
+</div>
